@@ -12,7 +12,7 @@ namespace avaliacao_m08.Modelos
         public string Titulo { get; private set; }
         public string Autor { get; private set; }
         public int Ano { get; private set; }
-        public bool Disponivel { get; private set; }
+        public bool Disponivel { get; set; }
 
         public Livro(int id, string titulo, string autor, int ano)
         {
