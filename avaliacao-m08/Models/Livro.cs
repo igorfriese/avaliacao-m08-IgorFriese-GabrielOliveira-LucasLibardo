@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace avaliacao_m08.Modelos
+﻿namespace avaliacao_m08.Modelos
 {
     public class Livro
     {
@@ -14,6 +8,10 @@ namespace avaliacao_m08.Modelos
         public int Ano { get; private set; }
         public bool Disponivel { get; set; }
 
+        public Livro()
+        {
+            Disponivel = true;
+        }
         public Livro(int id, string titulo, string autor, int ano)
         {
             Id = id;

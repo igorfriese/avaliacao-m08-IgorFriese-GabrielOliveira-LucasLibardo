@@ -1,11 +1,6 @@
 ﻿using avaliacao_m08.Exceptions;
 using avaliacao_m08.Interfaces;
 using avaliacao_m08.Modelos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace avaliacao_m08.Repositories
 {
@@ -41,6 +36,18 @@ namespace avaliacao_m08.Repositories
                 .Where(l => l.Autor.ToLower()
                 .Contains(autor.ToLower()))
                 .ToList();
+        }
+
+        public async Task ListarDisponiveisAsync()
+        {
+            await Task.Delay(500);
+
+            var disponiveis = livros.Where(l => l.Disponivel);
+
+            foreach (var livro in disponiveis)
+            {
+                Console.WriteLine($"{livro.Id} - {livro.Titulo}");
+            }
         }
     }
 }

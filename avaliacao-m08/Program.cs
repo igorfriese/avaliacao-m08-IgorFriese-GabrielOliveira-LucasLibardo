@@ -2,23 +2,23 @@
 using avaliacao_m08.Modelos;
 using avaliacao_m08.Repositories;
 using avaliacao_m08.Services;
-using System;
-using System.Xml;
+using Newtonsoft.Json;
 
 namespace avaliacao_m08
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            RepositorioLivro repo = new RepositorioLivro();
-            BibliotecaApiService api = new BibliotecaApiService();
+            RepositorioLivro repositorio = new RepositorioLivro();
+            BibliotecaApiService apiService = new BibliotecaApiService();
+            string arquivo = "livros.json";
 
-            repo.Adicionar(new Livro(1, "Dom Casmurro", "Machado de Assis", 1899));
-            repo.Adicionar(new Livro(2, "O Hobbit", "Tolkien", 1937));
-            repo.Adicionar(new Livro(3, "Harry Poter e a Pedra Filosofal", "J.K.Rowling", 1997));
-            repo.Adicionar(new Livro(4, "Christine - O carro assassino", "Stephen King", 1983));
-            repo.Adicionar(new Livro(5, "Duna", "Frank Herbert", 1965));
+            repositorio.Adicionar(new Livro(1, "Dom Casmurro", "Machado de Assis", 1899));
+            repositorio.Adicionar(new Livro(2, "O Hobbit", "Tolkien", 1937));
+            repositorio.Adicionar(new Livro(3, "Harry Potter e a Pedra Filosofal", "J.K.Rowling", 1997));
+            repositorio.Adicionar(new Livro(4, "Christine - O carro assassino", "Stephen King", 1983));
+            repositorio.Adicionar(new Livro(5, "Duna", "Frank Herbert", 1965));
 
             int opcao = -1;
 
@@ -33,12 +33,12 @@ namespace avaliacao_m08
                 Console.WriteLine("6 - Salvar arquivo");
                 Console.WriteLine("0 - Sair");
 
-                opcao = int.Parse(Console.ReadLine());
+                int.TryParse(Console.ReadLine(), out opcao);
 
                 switch (opcao)
                 {
                     case 1:
-                        var lista = repo.ListarTodos();
+                        var lista = repositorio.ListarTodos();
 
                         foreach (var l in lista)
                         {
@@ -52,7 +52,7 @@ namespace avaliacao_m08
                             Console.Write("ID: ");
                             int id = int.Parse(Console.ReadLine()!);
 
-                            var livro = repo.BuscarPorId(id);
+                            var livro = repositorio.BuscarPorId(id);
                             Console.WriteLine($"{livro.Titulo} - {livro.Autor}");
                         }
                         catch (LivroNaoEncontradoException ex)
@@ -65,20 +65,22 @@ namespace avaliacao_m08
                         Console.Write("Autor: ");
                         string autor = Console.ReadLine()!;
 
-                        var livrosAutor = repo.BuscarPorAutor(autor);
+                        var livrosAutor = repositorio.BuscarPorAutor(autor);
 
-                        foreach (var livro in livrosAutor)
+                        if (livrosAutor.Count == 0)
                         {
-                            Console.WriteLine(
-                                $"{livro.Titulo}");
+                            Console.WriteLine("Nenhum livro encontrado.");
+                        }
+                        else
+                        {
+                            foreach (var livro in livrosAutor)
+                            {
+                                Console.WriteLine(livro.Titulo);
+                            }
                         }
                         break;
 
                     case 4:
-                        await repositorio.ListarDisponiveisAsync();
-                        break;
-
-                    case 5:
                         Console.Write("Título: ");
                         string titulo = Console.ReadLine()!;
 
@@ -86,29 +88,13 @@ namespace avaliacao_m08
 
                         break;
 
-                    case 6:
-                        var novoLivro = new Livro();
-                        Console.Write("Id: ");
-                        novoLivro.Id = int.Parse(Console.ReadLine()!);
-
-                        Console.Write("Título: ");
-                        novoLivro.Titulo = Console.ReadLine()!;
-
-                        Console.Write("Autor: ");
-                        novoLivro.Autor = Console.ReadLine()!;
-
-                        Console.Write("Ano: ");
-                        novoLivro.Ano = int.Parse(Console.ReadLine()!);
-
-                        Console.Write("Disponível (true/false): ");
-                        novoLivro.Disponivel = bool.Parse(Console.ReadLine()!);
-
-                        repositorio.Adicionar(novoLivro);
+                    case 5:
+                        await repositorio.ListarDisponiveisAsync();
 
                         break;
 
-                    case 7:
-                        string json = JsonConvert.SerializeObject(repositorio.ObterLivros(), Formatting.Indented);
+                    case 6:
+                        string json = JsonConvert.SerializeObject(repositorio.ListarTodos(), Formatting.Indented);
                         File.WriteAllText(arquivo, json);
 
                         Console.WriteLine("Acervo salvo.");
@@ -118,6 +104,9 @@ namespace avaliacao_m08
                         Console.WriteLine("Saindo do Sistema.");
                         break;
 
+                    default:
+                        Console.WriteLine("Opção inválida.");
+                        break;
                 }
             }
         }
